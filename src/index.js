@@ -16,6 +16,7 @@ export const createApp = () =>{
     app.use(cors(corsOptions));
     app.use(limiter);
     app.use('/static',express.static(STORAGE_DIR))
+    app.use(bodyParser.json())  // for parsing application/json content-type
     app.use(bodyParser.urlencoded({ extended: false }))
     app.get('/', (req, res) =>{
         res.write("<h1>hello express</h1>");

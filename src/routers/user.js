@@ -9,8 +9,7 @@ const router = Router();
 
 router.get(
     '/infor',
-    verifyTokenAll("all"),
-    validate(userRemove),
+    verifyTokenAll("user"),
      detail
 );
 

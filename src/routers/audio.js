@@ -22,7 +22,7 @@ router.get(
 
 router.post(
     '/create',
-    verifyTokenAll("all"),
+    verifyTokenAll("user"),
     uploadFile,
     validate(createAudio),
     categoryCheck,
@@ -31,7 +31,7 @@ router.post(
 
 router.put(
     '/update',
-    verifyTokenAll("all"),
+    verifyTokenAll("user"),
     uploadFile,
     validate(updateAudio),
     categoryCheck,
@@ -40,7 +40,7 @@ router.put(
 
 router.delete(
     '/delete',
-    verifyTokenAll("all"),
+    verifyTokenAll("user"),
     validate(detailAudio),
     remove
 )

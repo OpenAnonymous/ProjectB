@@ -23,7 +23,7 @@ export const verifyTokenAll = (condition = "all") => {
 
                     jwt.verify(token, SECRET_KEY_USER, (err, decoded) => {
                         if (!err) {
-                            req.currentUser = decoded;
+                            req.curentUser = decoded;
                             isUserTokenValid = true;
                             
                         }

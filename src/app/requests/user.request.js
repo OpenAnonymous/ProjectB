@@ -20,16 +20,7 @@ export const userCreate = Joi.object({
 });
 
 export const userUpdate = Joi.object({
-    id: Joi.string().required().label("id người dùng").custom((value,helpers)=>
-        new AsyncValidate(value,async function(){
-            if(!isValidObjectId(value)){
-                return helpers.error("any.invalid")
-            }
-            const user = await User.findById(value);
-            return  user ? value : helpers.error("any.notFound");
-        })
-    ),
-    name : Joi.string().min(8).max(50).label("tên người dùng"),
+    name : Joi.string().min(4).max(50).label("tên người dùng"),
     email : Joi.string().email().label("email").custom((value,helpers)=>
         new AsyncValidate(value,async function(){
             const admin = await Admin.findOne({email: value});

@@ -4,7 +4,6 @@ import uniqid from 'uniqid';
 import FileUpload from "@/utils/handlers/audioUpload";
 import { APP_URL_API } from "@/config";
 import Audio from "../model/audio.model";
-import { ObjectId } from "mongodb";
 
 export const createUser = async (req) => {
     try {
@@ -30,12 +29,55 @@ export const createUser = async (req) => {
     }
 }
 
-export const detail = async ({email}) => {
-    const user = await User.findOne({email:email});
-    const linkavatar = APP_URL_API + user.avatarUrl;
-    user.avatarUrl = linkavatar;
-    return user;
+export const detail = async ({ email }) => {
+    try {
+        const user = await User.aggregate([
+            {
+                $match: { email: email }
+            },
+            {
+                $lookup: {
+                    from: 'audios',
+                    localField: 'uploadedAudio',
+                    foreignField: '_id',
+                    as: 'uploadedAudios'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'audios',
+                    localField: 'downloadedAudio',
+                    foreignField: '_id',
+                    as: 'downloadedAudios'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'audios',
+                    localField: 'likedAudio',
+                    foreignField: '_id',
+                    as: 'likedAudios'
+                }
+            }
+        ]);
+        console.log(user)
+        if(user[0].uploadedAudios.length > 0){
+            user[0].uploadedAudios = user[0].uploadedAudios.map(audio => {
+                audio.sourceUrl = APP_URL_API + audio.sourceUrl
+                return audio
+            })
+        }
+        if(user[0].avatarUrl){
+            user[0].avatarUrl = APP_URL_API + user[0].avatarUrl
+        }
+    
+        return user[0];
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
 }
+
 
 export const updateUser = async (req) => { 
     const user = await User.findOne({email:req.curentUser.email});
@@ -45,7 +87,6 @@ export const updateUser = async (req) => {
         user.avatarUrl = req.body.avatar.save();
     }
     const payload = req.body;
-
     payload.name ? user.name = payload.name : "";
     payload.email ? user.email = payload.email : "";
     payload.bio ? user.bio = payload.bio : "";
@@ -71,13 +112,11 @@ export const removeUser = async (payload)=>{
 //login/out
 
 export const loginUser = async (payload)=>{
-    const user = await User.findOne({email : payload.email});
-
-    const dataUpdate = [];
-    Promise.all(user.uploadedAudio.map( async (audio_id)=>{
+    const user = await User.findOne({email : payload.email})
+    const data = await Promise.all(user.uploadedAudio.map( async (audio_id)=>{
         const audio = await Audio.findById(audio_id);
-        if(audio) dataUpdate.push(audio_id);
+        if(audio) return audio._id;
     }))
-    user.uploadedAudio = dataUpdate;
-    return user.save();
+    user.uploadedAudio = data
+    return user;
 }

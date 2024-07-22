@@ -4,7 +4,19 @@ import { APP_URL_API } from "@/config";
 import { Category } from "../model/category.model";
 import { ObjectId } from "mongodb";
 import { User } from "../model/user.model";
-import { Admin } from "../model/admin.model";
+import { Types } from "mongoose";
+
+export function toObjectId(id) {
+    if (Types.ObjectId.isValid(id)) {
+      if (id instanceof Types.ObjectId) {
+        return id; 
+      } else {
+        return new Types.ObjectId(id);
+      }
+    } else {
+      throw new Error('Invalid ID');
+    }
+}
 
 export const filterAudio = async ({ q , page , limit , field , sort})=>{
     q = q ? { "$regex" : q , "$options" : "i"} : null;
@@ -21,35 +33,38 @@ export const filterAudio = async ({ q , page , limit , field , sort})=>{
 
     return audios.map((audio)=>{
         audio.sourceUrl = APP_URL_API + audio.sourceUrl
+        if(audio.thumnailUrl)
         audio.thumnailUrl = APP_URL_API + audio.thumnailUrl
         return audio;
     })
 }
 
-export const createAudio = async ({name , description,authorId ,thumnail , sound ,categories}) =>{
+export const createAudio = async (req) =>{
     try {
+        const { name, description,thumnail, sound, categories } = req.body;
+        const { email } = req.curentUser;
+        const user = await User.findOne({ email : email });
+
         const audio = new Audio({_id:new ObjectId()});
         audio.name = name;
         audio.description = description;
         audio.categories = categories;
         Promise.all(categories.map(async (category_id) =>{
             await Category.findByIdAndUpdate(
-                {_id : new ObjectId(category_id)},
-                { $push : {sounds : audio._id.toString()}}
+                category_id,
+                { $push : {sounds : audio._id}}
             )
         }))
         
-        await User.updateOne(
-            {_id : authorId},
-            {$push : { uploadedAudio : audio._id.toString()}}
-        )
-        await Admin.updateOne(
-            {_id : authorId},
-            {$push : { uploadedAudio : audio._id.toString()}}
+        await User.findByIdAndUpdate(
+            user._id,
+            {$push : { uploadedAudio : audio._id}}
         )
 
-        if (thumnail instanceof FileUpload && sound instanceof FileUpload) {
+        if (thumnail instanceof FileUpload){
             audio.thumnailUrl = thumnail.save();
+        }
+        if (sound instanceof FileUpload) {
             audio.sourceUrl = sound.save();
         }
         return await audio.save();
@@ -67,25 +82,35 @@ export const detailAudio = async ({id})=>{
     return audio;
 }
 
-export const updateAudio = async ({id,name,description,thumnail,sound,categories})=>{
+export const updateAudio = async ({body,curentUser})=>{
 
     try {
+    const {id,name,description,thumnail,sound,categories} = body
+    const { email } = curentUser;
+    const user = await User.findOne({email :email })
+    if(user){
+        if(user.uploadedAudio){
+            const isSoundOfUser = user.uploadedAudio.filter(item => item === toObjectId(body.id));
+            if(!isSoundOfUser) return false
+        }
+    }
     const audio = await Audio.findById(id);
     name? audio.name = name : "";
     description? audio.description = description : "";
 
     Promise.all(audio.categories.map(async (category_id) => {
         await Category.findByIdAndUpdate(
-            {_id: new ObjectId(category_id)},
-            { $pull: {sounds: id}},
+            category_id,
+            { $pull: {sounds: toObjectId(id)}},
         );
     }));
 
     categories? audio.categories = categories : "";
+    if(categories)
     Promise.all(categories.map(async (category_id) => {
         await Category.findByIdAndUpdate(
-            {_id: new ObjectId(category_id)},
-            { $push: {sounds: id}}
+            category_id,
+            { $push: {sounds: toObjectId(id)}}
         );
     }));
 
@@ -105,21 +130,34 @@ export const updateAudio = async ({id,name,description,thumnail,sound,categories
 }
 }
 
-export const removeAudio = async ({body,curentAdmin})=>{
+export const removeAudio = async ({body,curentUser})=>{
+    
+ try {
+    const user = await User.findOne({ email : curentUser.email });
+    if(user.uploadedAudio){
+        const isSoundOfUser = user.uploadedAudio.filter(item => item === toObjectId(body.id));
+        if(!isSoundOfUser) return false
+    }
     const id = body.id;
     const audio = await Audio.findById(id);
     Promise.all(audio.categories.map(async (category_id) => {
         await Category.findByIdAndUpdate(
-            {_id: new ObjectId(category_id)},
-            { $pull: {sounds: id}},
+            category_id,
+            { $pull: {sounds: toObjectId(id)}},
         );
     }));
     
-    await Admin.updateOne(
-        {email:curentAdmin.email},
-        {$pull: { uploadedAudio : id}}
+    await User.updateOne(
+        {email:curentUser.email},
+        {$pull: { uploadedAudio : toObjectId(id)}}
     )
+    if(audio.sourceUrl)
     FileUpload.remove(audio.sourceUrl);
+    if(audio.thumnailUrl)
     FileUpload.remove(audio.thumnailUrl);
-    return await Audio.findByIdAndDelete(id);
+
+    return await Audio.findByIdAndDelete(toObjectId(id));
+} catch (err) {
+    throw new Error("Failed to remove audio: " + err.message);
+}
 }
