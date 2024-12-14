@@ -7,7 +7,6 @@ import Audio from "../model/audio.model";
 
 export const createUser = async (req) => {
     try {
-        console.dir(req.body.avatar)
         let avatarUrl = "";
         if (req.body.avatar instanceof FileUpload) {
             avatarUrl =  req.body.avatar.save();
@@ -60,7 +59,7 @@ export const detail = async ({ email }) => {
                 }
             }
         ]);
-        console.log(user)
+    
         if(user[0].uploadedAudios.length > 0){
             user[0].uploadedAudios = user[0].uploadedAudios.map(audio => {
                 audio.sourceUrl = APP_URL_API + audio.sourceUrl
@@ -91,7 +90,13 @@ export const updateUser = async (req) => {
     payload.email ? user.email = payload.email : "";
     payload.bio ? user.bio = payload.bio : "";
 
-    return await user.save();
+    
+    const userUpdated = await user.save();
+    console.log(userUpdated,"======");
+    if(userUpdated.avatarUrl){
+        userUpdated.avatarUrl = APP_URL_API + user.avatarUrl
+    }
+    return userUpdated;
 }
 
 export const removeUser = async (payload)=>{
