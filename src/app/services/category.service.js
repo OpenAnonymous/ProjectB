@@ -2,6 +2,19 @@ import { Category } from "../model/category.model";
 import Audio from "../model/audio.model";
 import { ObjectId } from "mongodb";
 
+
+
+export const getAllCategories = async () => {
+    const categories = await Category.find({});
+    return categories.map((category) => {
+        return {
+            id: category._id,
+            name: category.name,
+            description: category.description
+        };
+    });
+};
+
 export const filter = async ({q , page , limit ,field ,sort}) =>{
     q = q ? {"$regex" : q , "$options" : "i" } : null;
     

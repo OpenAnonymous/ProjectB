@@ -6,6 +6,12 @@ import cache from "@/storage/cache/cache";
 import { SECRET_KEY_ADMIN } from "@/config";
 import { Admin } from "../model/admin.model";
 
+export const dashboard = async (req,res) =>{
+    res.render("layout",{
+        title : "dashboard",
+        body : "category"
+    });
+}
 
 export const create = async (req, res, next) =>{
     try {

@@ -21,7 +21,11 @@ export const createUser = async (req) => {
             bio: payload.bio || "",
         });
 
-        return await user.save();
+        const userr = await user.save();
+        if(userr.avatarUrl){
+            userr.avatarUrl = APP_URL_API + userr.avatarUrl
+        }
+        return userr;
     }
     catch (err) {
         throw new Error(err);
@@ -59,17 +63,22 @@ export const detail = async ({ email }) => {
                 }
             }
         ]);
-    
-        if(user[0].uploadedAudios.length > 0){
+
+        if (user[0].uploadedAudios.length > 0) {
             user[0].uploadedAudios = user[0].uploadedAudios.map(audio => {
-                audio.sourceUrl = APP_URL_API + audio.sourceUrl
-                return audio
-            })
+                audio.sourceUrl = APP_URL_API + audio.sourceUrl;
+                return audio;
+            });
         }
-        if(user[0].avatarUrl){
-            user[0].avatarUrl = APP_URL_API + user[0].avatarUrl
+        if (user[0].avatarUrl) {
+            user[0].avatarUrl = APP_URL_API + user[0].avatarUrl;
         }
-    
+
+        // Loại bỏ các trường gốc để tránh lặp
+        delete user[0].uploadedAudio;
+        delete user[0].downloadedAudio;
+        delete user[0].likedAudio;
+
         return user[0];
     } catch (err) {
         console.error(err);
@@ -125,3 +134,43 @@ export const loginUser = async (payload)=>{
     user.uploadedAudio = data
     return user;
 }
+
+
+export const likeAudio = async (email, audioId) => {
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        const audio = await Audio.findById(audioId);
+        if (!audio) {
+            throw new Error("Audio not found");
+        }
+
+        // Kiểm tra xem user đã thích audio này chưa
+        const audioIndex = user.likedAudio.indexOf(audioId);
+        let action;
+
+        if (audioIndex === -1) {
+            // Người dùng chưa thích audio, thêm vào danh sách liked
+            user.likedAudio.push(audioId);
+            audio.likes += 1;
+            action = 'liked';
+        } else {
+            // Người dùng đã thích audio, gỡ ra khỏi danh sách liked
+            user.likedAudio.splice(audioIndex, 1);
+            audio.likes = Math.max(0, audio.likes - 1); // Bảo đảm số likes không âm
+            action = 'unliked';
+        }
+
+        // Lưu thay đổi
+        const updatedUser = await user.save();
+        await audio.save();
+
+        // Trả về thông tin user đã cập nhật và hành động thực hiện
+        return { updatedUser, action };
+    } catch (error) {
+        throw new Error(`Failed to like/unlike audio: ${error.message}`);
+    }
+};

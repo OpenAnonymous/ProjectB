@@ -18,26 +18,35 @@ export function toObjectId(id) {
     }
 }
 
-export const filterAudio = async ({ q , page , limit , field , sort})=>{
-    q = q ? { "$regex" : q , "$options" : "i"} : null;
-    
-    const filter = {
-        ...(q && {$or : [ {name : q} , {description : q} ]})
-    }
-    const jump = (page-1)*limit; 
+export const filterAudio = async ({ q, page, limit, field, sort, categories, minLikes ,downloads}) => {
+    // Lọc theo từ khóa tìm kiếm
+    q = q ? { "$regex": q, "$options": "i" } : null;
 
+    // Tạo bộ lọc
+    const filter = {
+        ...(q && { $or: [{ name: q }, { description: q }] }),
+        ...(categories && { categories: { $in: categories } }), // Lọc theo categories
+        ...(minLikes && { likes: { $gte: minLikes } }), // Lọc theo likes (nếu có minLikes)
+        ...(downloads && { downloads: { $gte: downloads } }) // Lọc theo downloads (nếu có downloads)
+    };
+
+    // Tính toán số trang để bỏ qua các bản ghi đã qua
+    const jump = (page - 1) * limit;
+
+    // Tìm các bản ghi audio thỏa mãn điều kiện lọc
     const audios = await Audio.find(filter)
         .skip(jump)
         .limit(limit)
-        .sort({[field] : sort});
+        .sort({ [field]: sort });
 
-    return audios.map((audio)=>{
-        audio.sourceUrl = APP_URL_API + audio.sourceUrl
-        if(audio.thumnailUrl)
-        audio.thumnailUrl = APP_URL_API + audio.thumnailUrl
+    // Cập nhật sourceUrl và thumnailUrl với URL đầy đủ
+    return audios.map((audio) => {
+        audio.sourceUrl = APP_URL_API + audio.sourceUrl;
+        if (audio.thumnailUrl) audio.thumnailUrl = APP_URL_API + audio.thumnailUrl;
         return audio;
-    })
-}
+    });
+};
+
 
 export const createAudio = async (req) =>{
     try {

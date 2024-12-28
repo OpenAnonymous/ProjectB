@@ -25,3 +25,16 @@ export const remove = async (req,res,next) =>{
     const category = await cateService.remove(req.body);
     return await responseSuccess(res,category);
 }
+
+
+export const getCategories = async (req, res) => {
+    try {
+        // Lấy danh sách danh mục từ service
+        const categories = await cateService.getAllCategories();
+        // Render danh sách danh mục ra trang dashboard.ejs
+        res.render('category', { categories });
+    } catch (err) {
+        res.status(500).send('Có lỗi xảy ra khi lấy danh mục');
+    }
+};
+

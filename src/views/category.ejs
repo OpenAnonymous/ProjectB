@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Quản lý danh mục</title>
+    <link rel="stylesheet" href="/styles/category.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Quản lý danh mục</h1>
+
+        <div class="header-row">
+            <h2>Danh sách danh mục</h2>
+            <button id="create-category-btn" class="create-btn">Tạo danh mục</button>
+        </div>
+
+        <table class="category-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên danh mục</th>
+                    <th>Mô tả</th>
+                    <th>Thao tác</th> <!-- Thêm cột Thao tác -->
+                </tr>
+            </thead>
+            <tbody>
+                <% categories.forEach(category=> { %>
+                    <tr data-id="<%= category.id %>" data-name="<%= category.name %>"
+                        data-description="<%= category.description %>">
+                        <td>
+                            <%= category.id %>
+                        </td>
+                        <td>
+                            <%= category.name %>
+                        </td>
+                        <td>
+                            <%= category.description %>
+                        </td>
+                        <td>
+                            <button class="delete-btn" data-id="<%= category.id %>">Xóa</button>
+                        </td>
+                    </tr>
+                    <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal chỉnh sửa danh mục -->
+    <div class="modal-overlay" id="edit-modal-overlay"></div>
+    <div class="modal" id="edit-category-modal">
+        <h2>Chi tiết danh mục</h2>
+        <form id="edit-category-form">
+            <label for="category-id">ID</label>
+            <input type="text" id="category-id" name="id" readonly>
+
+            <label for="category-name">Tên danh mục</label>
+            <input type="text" id="category-name" name="name">
+
+            <label for="category-description">Mô tả</label>
+            <textarea id="category-description" name="description"></textarea>
+
+            <button type="button" id="update-category-btn">Cập nhật</button>
+        </form>
+    </div>
+
+    <!-- Modal tạo danh mục mới -->
+    <div class="modal-overlay" id="create-modal-overlay"></div>
+    <div class="modal" id="create-category-modal">
+        <h2>Tạo danh mục mới</h2>
+        <form id="create-category-form">
+            <label for="new-category-name">Tên danh mục</label>
+            <input type="text" id="new-category-name" name="name" required>
+
+            <label for="new-category-description">Mô tả</label>
+            <textarea id="new-category-description" name="description" required></textarea>
+
+            <button type="button" id="save-category-btn">Lưu</button>
+        </form>
+    </div>
+
+    <!-- Modal xác nhận xóa danh mục -->
+    <div class="modal-overlay" id="delete-modal-overlay"></div>
+    <div class="modal" id="delete-category-modal">
+        <h2>Xác nhận xóa danh mục</h2>
+        <p>Bạn có chắc chắn muốn xóa danh mục này không?</p>
+        <button type="button" id="confirm-delete-btn">Xóa</button>
+        <button type="button" id="cancel-delete-btn">Hủy</button>
+    </div>
+
+    <script>
+        // Modal elements
+        const editModal = document.getElementById('edit-category-modal');
+        const createModal = document.getElementById('create-category-modal');
+        const deleteModal = document.getElementById('delete-category-modal');
+        const editModalOverlay = document.getElementById('edit-modal-overlay');
+        const createModalOverlay = document.getElementById('create-modal-overlay');
+        const deleteModalOverlay = document.getElementById('delete-modal-overlay');
+        const editForm = document.getElementById('edit-category-form');
+        const createCategoryForm = document.getElementById('create-category-form');
+
+        let categoryIdToDelete = null; // Variable to hold category id to delete
+
+        // Show modal for editing category
+        document.querySelectorAll('.category-table tbody tr').forEach(row => {
+            row.addEventListener('click', (e) => {
+                // Check if the clicked element is the delete button
+                if (e.target.classList.contains('delete-btn')) {
+                    return; // If it's the delete button, don't trigger row click
+                }
+
+                const id = row.dataset.id;
+                const name = row.dataset.name;
+                const description = row.dataset.description;
+
+                // Fill modal inputs
+                document.getElementById('category-id').value = id;
+                document.getElementById('category-name').value = name;
+                document.getElementById('category-description').value = description;
+
+                // Show edit modal
+                editModal.classList.add('show');
+                editModalOverlay.classList.add('show');
+            });
+        });
+
+        // Show modal for creating a new category
+        document.getElementById('create-category-btn').addEventListener('click', () => {
+            document.querySelector('.modal h2').innerText = 'Tạo danh mục mới';
+            createCategoryForm.reset();
+
+            // Show create modal
+            createModal.classList.add('show');
+            createModalOverlay.classList.add('show');
+        });
+
+        // Show modal for deleting a category
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                categoryIdToDelete = e.target.dataset.id; // Get the category ID from the button
+                // Show delete confirmation modal
+                deleteModal.classList.add('show');
+                deleteModalOverlay.classList.add('show');
+                e.stopPropagation(); // Prevent the row click event from triggering
+            });
+        });
+
+        // Hide modals
+        editModalOverlay.addEventListener('click', () => {
+            editModal.classList.remove('show');
+            editModalOverlay.classList.remove('show');
+        });
+
+        createModalOverlay.addEventListener('click', () => {
+            createModal.classList.remove('show');
+            createModalOverlay.classList.remove('show');
+        });
+
+        deleteModalOverlay.addEventListener('click', () => {
+            deleteModal.classList.remove('show');
+            deleteModalOverlay.classList.remove('show');
+        });
+
+        // Update category logic
+        document.getElementById('update-category-btn').addEventListener('click', () => {
+            const formData = new FormData(editForm);
+
+            // Replace this with an actual update API call
+            console.log('Updating category:', {
+                id: formData.get('id'),
+                name: formData.get('name'),
+                description: formData.get('description')
+            });
+
+            // Hide modal
+            editModal.classList.remove('show');
+            editModalOverlay.classList.remove('show');
+        });
+
+        // Save new category logic
+        document.getElementById('save-category-btn').addEventListener('click', () => {
+            const formData = new FormData(createCategoryForm);
+
+            // Replace this with an actual API call
+            console.log('Creating new category:', {
+                name: formData.get('name'),
+                description: formData.get('description')
+            });
+
+            // Hide modal
+            createModal.classList.remove('show');
+            createModalOverlay.classList.remove('show');
+        });
+
+        // Delete category logic
+        document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+            // When confirmed, send the category id to be deleted
+            console.log('Deleting category with ID:', categoryIdToDelete);
+
+            // Hide delete modal
+            deleteModal.classList.remove('show');
+            deleteModalOverlay.classList.remove('show');
+
+            // Perform actual deletion logic (e.g., API call) here
+        });
+
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+            // Hide delete modal
+            deleteModal.classList.remove('show');
+            deleteModalOverlay.classList.remove('show');
+        });
+    </script>
+
+</body>
+
+</html>

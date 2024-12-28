@@ -1,5 +1,5 @@
 import { responseSuccess,responseError } from "@/utils/helpers/response.helpers"
-import { loginUser,createUser,detail as details ,updateUser ,removeUser} from "../services/user.service";
+import { loginUser,createUser,detail as details ,updateUser ,removeUser ,likeAudio as lau} from "../services/user.service";
 import { genToken } from "@/utils/helpers/generateToken.helpers";
 import { comparePassword } from "@/utils/handlers/hashPassword";
 import cache from "@/storage/cache/cache";
@@ -75,4 +75,24 @@ export const logout = async (req,res)=>{
     const ttl = exp-Math.floor(Date.now() / 1000);
     cache.addCache(token,token,ttl);
     responseSuccess(res,null);
+}
+
+// import { likeAudio } from "../services/user.service";
+
+export const likeAudio = async (req, res) => {
+    try {
+        const email = req.curentUser.email;
+        const { audioId } = req.body;
+
+        // Call the service function to like or unlike the audio
+        const { updatedUser, action } = await lau(email, audioId);
+        console.log(updatedUser,action,"=========");
+
+        // Determine the message based on the action performed
+        const message = action === 'liked' ? "Audio liked successfully" : "Audio unliked successfully";
+
+        return responseSuccess(res,message);
+    } catch (err) {
+        return responseError(res, err.message, 400, "Failed to like/unlike audio");
+    }
 }

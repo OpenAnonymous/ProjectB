@@ -8,6 +8,9 @@ const route = (app) => {
     app.use("/sound",audio);
     app.use("/categories",category);
     app.use("/user",user);
+    app.use("/test",(req,res)=>{
+        res.render('index',{title : "hello world tesst"});
+    });
 };
 
 export default route; 

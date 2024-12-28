@@ -33,6 +33,8 @@ export const MAIL_PASSWORD = process.env.MAIL_PASSWORD;
 export const SOURCE_DIR = path.join(__dirname);
 export const SOURCE_MAIN = path.dirname(SOURCE_DIR);
 export const STORAGE_DIR = path.join(path.dirname(SOURCE_MAIN),"//", "public//upload");
+export const VIEWS_DIR = path.join(SOURCE_MAIN,"views");
+export const STYLES_DIR = path.join(SOURCE_MAIN,"public");
 
 //HASH
 export const SALT_ROUND = process.env.SALT_ROUND;

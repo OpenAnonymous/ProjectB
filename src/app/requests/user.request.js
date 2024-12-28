@@ -3,6 +3,7 @@ import { User } from "../model/user.model";
 import Joi from "joi";
 import { Admin } from "../model/admin.model";
 import { isValidObjectId } from "mongoose";
+import Audio from "../model/audio.model";
 
 export const userCreate = Joi.object({
     name : Joi.string().min(6).max(50).label("tên người dùng").allow('', null),
@@ -56,3 +57,15 @@ export const userLogin = Joi.object({
     ),
     password:Joi.string().min(6).max(50).required()
 })
+
+export const likeAudio = Joi.object({
+    audioId: Joi.string().required().label("Audio ID").custom((value, helpers) => {
+        if (!isValidObjectId(value)) {
+            return helpers.error("any.invalid");
+        }
+        return new AsyncValidate(value, async function () {
+            const audio = await Audio.findById(value);
+            return audio ? value : helpers.error("any.notFound");
+        });
+    })
+});
