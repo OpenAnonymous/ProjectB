@@ -3,14 +3,22 @@ import { create as createAdmin, login as loginAdmin,remove as removeAdmin } from
 import { genToken } from "@/utils/helpers/generateToken.helpers";
 import { comparePassword} from "@/utils/handlers/hashPassword";
 import cache from "@/storage/cache/cache";
-import { SECRET_KEY_ADMIN } from "@/config";
+import { SECRET_KEY_ADMIN ,APP_URL_API} from "@/config";
 import { Admin } from "../model/admin.model";
+import * as cateService from "@/app/services/category.service";
 
-export const dashboard = async (req,res) =>{
-    res.render("layout",{
-        title : "dashboard",
-        body : "category"
-    });
+export const dashboard = async (req,res,next) =>{
+    try {
+        const categories = await cateService.getAllCategories();
+        res.render("layout",{
+            title : "dashboard",
+            body: 'category',
+            data : {categories: categories}
+        });
+    } catch (err) {
+        res.status(500).send('Có lỗi xảy ra khi lấy danh mục');
+        next(err);
+    }
 }
 
 export const create = async (req, res, next) =>{
@@ -28,6 +36,18 @@ export const create = async (req, res, next) =>{
     }
 }
 
+export const loginPage = async (req,res,next) =>{
+    try {
+        res.render("layout",{
+            title : "Đăng nhập",
+            body: 'login',
+            data : {API_URL:APP_URL_API}
+        });
+    } catch (err) {
+        res.status(500).send('Có lỗi xảy ra tải trangtrang');
+        next(err);
+    }
+}
 export const login = async (req, res,next) =>{
     try{
         
@@ -40,7 +60,7 @@ export const login = async (req, res,next) =>{
             });
         }
         else{
-            responseError(res, 401, "sai mật khẩu");
+            responseError(res,{}, 401, "mật khẩu hoặc email chưa chính xác");
         }
     }
     catch(error){

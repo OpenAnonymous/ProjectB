@@ -7,25 +7,23 @@
     <link rel="stylesheet" href="/styles/layout.css">
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <h1>ADMIN DASHBOARD</h1>
-        </div>
-    </header>
 
-    <!-- Sidebar Navigation -->
     <nav class="sidebar">
+        <h1>ADMIN DASHBOARD</h1>
         <ul>
-            <li><a href="/manage-categories">Quản lý danh mục</a></li>
-            <li><a href="/login">Login</a></li>
-            <li><a href="/logout">Logout</a></li>
+            <li><a href="/admin/dashboard">Quản lý danh mục</a></li>
+            <li><a href="/admin/login">Login</a></li>
+            <li><a href="" style="display: none;">Logout</a></li>
         </ul>
     </nav>
 
-    <!-- Main Content -->
+    <div class="loading"><div class="spinner"></div></div>
+
     <main>
-        <%- body %> <!-- Nội dung thay đổi cho từng trang -->
+       <%- include(body, {data}) %>
     </main>
+
 </body>
+
+<script src="/javascript/layout/index.js"></script>
 </html>

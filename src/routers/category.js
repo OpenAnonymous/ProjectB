@@ -3,7 +3,6 @@ import * as joirequest from "@/app/requests/category.request";
 import { validate } from "@/app/middleware/validate";
 import { verifyTokenAll } from "@/app/middleware/verifyToken";
 import Router from "express";
-import { getCategories } from "@/app/controller/category.controller";
 
 const router = Router();
 
@@ -40,7 +39,5 @@ router.delete(
     validate(joirequest.detail),
     remove
 )
-
-
 
 export default router;
