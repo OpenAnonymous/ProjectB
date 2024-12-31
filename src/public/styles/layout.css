@@ -1,0 +1,95 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #f4f4f4;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+}
+.sidebar h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100px;
+    background-color: aquamarine;
+    text-align: center;
+    font-size: 1.5em;
+}
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    
+}
+
+.sidebar ul li a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    text-decoration: none;
+    display: block;
+    padding: 20px 20px;
+    transition: background 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #ddd;
+}
+
+main {
+    margin-left: 220px;
+    padding: 20px;
+}
+
+/* Hiển thị màn hình loading */
+.loading {
+    display: 'flex';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #333;
+    z-index: 9999;
+}
+
+/* Thêm hiệu ứng cho màn hình loading */
+.loading .spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+}
+
+/* Chạy vòng quay */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

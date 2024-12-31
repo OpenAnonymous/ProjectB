@@ -1,0 +1,97 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #74ebd5, #acb6e5);
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form {
+    background: #ffffff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    text-align: center;
+}
+
+.login-form h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px;
+}
+
+.login-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+    text-align: left;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.login-form input:focus {
+    border-color: #74ebd5;
+    outline: none;
+    box-shadow: 0 0 5px rgba(116, 235, 213, 0.5);
+}
+
+.login-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #74ebd5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-form button:hover {
+    background-color: #5dc0b7;
+}
+
+/* CSS cho popup thông báo lỗi */
+/* CSS cho popup thông báo lỗi */
+.error-popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 0, 0, 0.8); /* Màu nền đỏ */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: none; /* Ẩn popup mặc định */
+    font-size: 16px;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    animation: bounce 0.5s ease-out; /* Thêm hiệu ứng nảy ra */
+}
+
+/* Hiệu ứng nảy ra */
+@keyframes bounce {
+    0% {
+        transform: translateX(-50%) scale(0.8) translateY(-50px);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.1);
+    }
+    100% {
+        transform: translateX(-50%) scale(1) translateY(0);
+    }
+}
+
+
