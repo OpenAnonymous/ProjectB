@@ -41,11 +41,11 @@ export const download = async (req, res, next) => {
         if (fs.existsSync(path)) {
             // Tìm và cập nhật số lượng downloads trong cơ sở dữ liệu
             const audio = await Audio.findOneAndUpdate(
-                { sourceUrl: filename }, // Tìm dựa vào sourceUrl (hoặc sửa điều kiện phù hợp)
+                { sourceUrl: `static\\${filename}` }, // Tìm dựa vào sourceUrl (hoặc sửa điều kiện phù hợp)
                 { $inc: { downloads: 1 } }, // Tăng downloads thêm 1
                 { new: true } // Trả về tài liệu đã được cập nhật
             );
-
+            console.log(audio,"---------downloaded success");
             if (!audio) {
                 return responseError(res, null, 404, 'Audio không tồn tại trong cơ sở dữ liệu');
             }
