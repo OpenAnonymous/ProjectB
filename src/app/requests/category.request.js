@@ -24,6 +24,15 @@ export const create = Joi.object({
 }); 
 
 export const update = Joi.object({
+    id : Joi.string().required().custom((value,helpers)=>{
+        if(!isValidObjectId(value)){
+            return helpers.error("any.invalid")
+        }
+        return new AsyncValidate(value, async function () {
+            const category = await Category.findById(value);
+            return category ? value : helpers.error("any.notFound");
+        })
+    }),
     name : Joi.string().min(6).max(40).label("tên danh mục"),
     description : Joi.string().min(6).max(255).label("mô tả danh mục")
 });

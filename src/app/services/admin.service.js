@@ -13,8 +13,13 @@ export const create = async (payload)=>{
 }
     
 export const login = async (payload)=>{
-    const admin = await Admin.findOne({email : payload.email});
-    return admin;
+    try{
+        const admin = await Admin.findOne({email : payload.email});
+        return admin;
+    }
+    catch(err){
+        return err;
+    }
 }
 
 export const remove = async (payload)=>{

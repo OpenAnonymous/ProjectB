@@ -26,7 +26,7 @@ submit.addEventListener('click', async (e) => {
         const responseData = await response.json();
         if (response.ok) {
             if (responseData.data.token) {
-                localStorage.setItem('token', responseData.data.token);
+                sessionStorage.setItem('token', responseData.data.token);
                 window.location.href = '/admin/dashboard';
             } else {
                 showErrorPopup("Lỗi đăng nhập.");

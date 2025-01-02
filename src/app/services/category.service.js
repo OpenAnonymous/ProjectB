@@ -51,12 +51,16 @@ export const detail = async ({id}) => {
     return await Category.findById(id);
 }
 
-export const update = async ({id , name ,description}) => {
-    const category = await Category.findById(id);
-    name ? category.name = name : "";
-    description ? category.description = description : "";
-    return await category.save();
-}
+export const update = async ({id, name, description}) => {
+    try {
+        const category = await Category.findById(id);
+        name ? category.name = name : "";
+        description ? category.description = description : "";
+        return await category.save();
+    } catch (error) {
+        return error;
+    }
+};
 
 export const remove = async ({id}) => {
     const category = await Category.findById(id);
