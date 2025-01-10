@@ -32,11 +32,23 @@ export const createUser = async (req) => {
     }
 }
 
+import { Types } from 'mongoose';
 export const detail = async ({ email }) => {
     try {
         const user = await User.aggregate([
             {
                 $match: { email: email }
+            },
+            {
+                $addFields: {
+                    likedAudio: {
+                        $map: {
+                            input: "$likedAudio",
+                            as: "audioId",
+                            in: { $toObjectId: "$$audioId" }
+                        }
+                    }
+                }
             },
             {
                 $lookup: {
@@ -64,20 +76,22 @@ export const detail = async ({ email }) => {
             }
         ]);
 
-        if (user[0].uploadedAudios.length > 0) {
+        console.log(user, "=========");
+
+        if (user[0]?.uploadedAudios.length > 0) {
             user[0].uploadedAudios = user[0].uploadedAudios.map(audio => {
                 audio.sourceUrl = APP_URL_API + audio.sourceUrl;
                 return audio;
             });
         }
-        if (user[0].avatarUrl) {
+        if (user[0]?.avatarUrl) {
             user[0].avatarUrl = APP_URL_API + user[0].avatarUrl;
         }
 
         // Loại bỏ các trường gốc để tránh lặp
-        delete user[0].uploadedAudio;
-        delete user[0].downloadedAudio;
-        delete user[0].likedAudio;
+        delete user[0]?.uploadedAudio;
+        delete user[0]?.downloadedAudio;
+        delete user[0]?.likedAudio;
 
         return user[0];
     } catch (err) {
@@ -85,6 +99,7 @@ export const detail = async ({ email }) => {
         throw err;
     }
 }
+
 
 
 export const updateUser = async (req) => { 
