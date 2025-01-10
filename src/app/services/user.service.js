@@ -78,12 +78,14 @@ export const detail = async ({ email }) => {
 
         console.log(user, "=========");
 
-        if (user[0]?.uploadedAudios.length > 0) {
-            user[0].uploadedAudios = user[0].uploadedAudios.map(audio => {
-                audio.sourceUrl = APP_URL_API + audio.sourceUrl;
-                return audio;
-            });
+        if (user[0]) {
+            // Chỉ giữ lại các id dưới dạng string
+            user[0].uploadedAudios = user[0].uploadedAudios.map(audio => audio._id.toString());
+            user[0].downloadedAudios = user[0].downloadedAudios.map(audio => audio._id.toString());
+            user[0].likedAudios = user[0].likedAudios.map(audio => audio._id.toString());
         }
+
+        // Thêm tiền tố cho avatarUrl nếu tồn tại
         if (user[0]?.avatarUrl) {
             user[0].avatarUrl = APP_URL_API + user[0].avatarUrl;
         }
@@ -99,6 +101,7 @@ export const detail = async ({ email }) => {
         throw err;
     }
 }
+
 
 
 
