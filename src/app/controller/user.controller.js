@@ -3,6 +3,7 @@ import { loginUser,createUser,detail as details ,updateUser ,removeUser ,likeAud
 import { genToken } from "@/utils/helpers/generateToken.helpers";
 import { comparePassword } from "@/utils/handlers/hashPassword";
 import cache from "@/storage/cache/cache";
+import { SECRET_KEY_USER } from "@/config";
 
 export const create = async (req,res,next)=>{
     try {
