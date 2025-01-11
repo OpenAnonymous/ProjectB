@@ -1,3 +1,4 @@
+import { deleteReportedAudios } from "./run-any-day";
 export const log = async () => {
     const message = `
     ███╗   ██╗ ██████╗ ██████╗ ███████╗     ██╗███████╗              ███████╗██╗  ██╗██████╗ ██████╗ ███████╗███████╗███████╗
@@ -9,4 +10,5 @@ export const log = async () => {
                                                                                                                              
     `;
     console.log("\x1b[38;2;102;0;255m" + message + "\x1b[0m");
+    await deleteReportedAudios();
 };

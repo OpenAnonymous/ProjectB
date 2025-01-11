@@ -77,6 +77,16 @@ export const logout = async (req,res)=>{
     responseSuccess(res,null);
 }
 
+import { reportAudio } from "../services/user.service";
+export const reportA = async (req, res) => {
+    try{
+        const result = await reportAudio
+    }
+    catch(err){
+        return responseError(res, err.message, 400, "Failed to report audio");
+    }//==============================================
+};
+
 // import { likeAudio } from "../services/user.service";
 
 export const likeAudio = async (req, res) => {

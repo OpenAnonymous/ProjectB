@@ -10,13 +10,18 @@ const schema = new Schema({
     categories: Array,
     likes: {
         type: Number,
-        default: 0, // Mặc định là 0 khi tạo mới
-        min: 0      // Đảm bảo không âm
+        default: 0, 
+        min: 0      
     },
     downloads: {
         type: Number,
-        default: 0, // Mặc đ��nh là 0 khi tạo mới
-        min: 0      // Đảm bảo không ��m
+        default: 0, 
+        min: 0      
+    },
+    reports: { // Thêm trường reports là số
+        type: Number,
+        default: 0,
+        min: 0
     }
 });
 

@@ -80,9 +80,16 @@ export const detail = async ({ email }) => {
 
         if (user[0]) {
             // Chỉ giữ lại các id dưới dạng string
-            user[0].uploadedAudios = user[0].uploadedAudios.map(audio => audio._id.toString());
             user[0].downloadedAudios = user[0].downloadedAudios.map(audio => audio._id.toString());
             user[0].likedAudios = user[0].likedAudios.map(audio => audio._id.toString());
+
+            // Thêm tiền tố APP_URL_API vào đường dẫn sourceUrl của uploadedAudios
+            user[0].uploadedAudios = user[0].uploadedAudios.map(audio => {
+                if (audio.sourceUrl) {
+                    audio.sourceUrl = APP_URL_API + audio.sourceUrl.replace(/\\/g, '/'); // Đảm bảo dấu "\" được thay thế bằng "/"
+                }
+                return audio;
+            });
         }
 
         // Thêm tiền tố cho avatarUrl nếu tồn tại
@@ -101,6 +108,7 @@ export const detail = async ({ email }) => {
         throw err;
     }
 }
+
 
 
 
