@@ -20,7 +20,7 @@ export const createApp = () =>{
     app.use(express.static(STYLES_DIR));
     
     app.use(cors(corsOptions));
-    app.use(limiter);
+    // app.use(limiter);
     app.use('/static',express.static(STORAGE_DIR))
     app.use(bodyParser.json())  // for parsing application/json content-type
     app.use(bodyParser.urlencoded({ extended: false }))
