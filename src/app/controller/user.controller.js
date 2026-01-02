@@ -80,11 +80,18 @@ export const logout = async (req,res)=>{
 import { reportAudio } from "../services/user.service";
 export const reportA = async (req, res) => {
     try{
-        const result = await reportAudio
+        const email = req.curentUser.email;
+        const { audioId } = req.body;
+
+        // Call the service function to like or unlike the audio
+        const { updatedUser, action } = await reportAudio(email, audioId);
+        const message = action === 'reported' ? "Audio reported successfully" : "Audio unreported successfully";
+
+        return responseSuccess(res,message);
     }
     catch(err){
         return responseError(res, err.message, 400, "Failed to report audio");
-    }//==============================================
+    }
 };
 
 // import { likeAudio } from "../services/user.service";

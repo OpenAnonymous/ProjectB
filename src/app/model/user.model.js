@@ -8,6 +8,7 @@ const schema = new Schema({
     avatarUrl : String,
     bio : String,
     likedAudio : Array,
+    reportAudio : Array,
     uploadedAudio : Array,
     downloadedAudio : Array
 })

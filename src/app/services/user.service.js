@@ -200,3 +200,42 @@ export const likeAudio = async (email, audioId) => {
         throw new Error(`Failed to like/unlike audio: ${error.message}`);
     }
 };
+
+export const reportAudio = async (email, audioId) => {
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        const audio = await Audio.findById(audioId);
+        if (!audio) {
+            throw new Error("Audio not found");
+        }
+
+        // Kiểm tra xem user đã thích audio này chưa
+        const audioIndex = user.reportAudio.indexOf(audioId);
+        let action;
+
+        if (audioIndex === -1) {
+            // Người dùng chưa thích audio, thêm vào danh sách liked
+            user.reportAudio.push(audioId);
+            audio.reports += 1;
+            action = 'reported';
+        } else {
+            // Người dùng đã thích audio, gỡ ra khỏi danh sách liked
+            user.reportAudio.splice(audioIndex, 1);
+            audio.reports = Math.max(0, audio.likes - 1); // Bảo đảm số likes không âm
+            action = 'unReport';
+        }
+
+        // Lưu thay đổi
+        const updatedUser = await user.save();
+        await audio.save();
+
+        // Trả về thông tin user đã cập nhật và hành động thực hiện
+        return { updatedUser, action };
+    } catch (error) {
+        throw new Error(`Failed to report/unreport audio: ${error.message}`);
+    }
+}

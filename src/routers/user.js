@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { create,detail,update,remove,login,logout,likeAudio,sendEmail,editPassword,savePassword } from "@/app/controller/user.controller";
+import { create,detail,update,remove,login,logout,likeAudio,reportA,sendEmail,editPassword,savePassword } from "@/app/controller/user.controller";
 import { uploadFile } from "@/config/multer";
 import { validate } from "@/app/middleware/validate";
 import { userCreate,userUpdate,userRemove,userLogin,likeAudio as lk} from "@/app/requests/user.request";
@@ -53,6 +53,13 @@ router.post(
     verifyTokenAll("user"),
     validate(lk),
     likeAudio
+)
+
+router.post(
+    '/report-audio',
+    verifyTokenAll("user"),
+    validate(lk),
+    reportA
 )
 
 router.get(
